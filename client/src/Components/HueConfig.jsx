@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { asyncRequest, restRequest } from "../Helpers/AsyncRequest";
+import DeviceSetupOption from "./DeviceSetupOption";
 
 class HueConfig extends Component {
   constructor(props) {
@@ -45,7 +46,13 @@ class HueConfig extends Component {
   };
 
   handleDiscoveredDevices = () => {
-      
+    return (
+      <div>
+        {this.state.discoveredDevices.map((device) => (
+          <DeviceSetupOption key={device.uuid} device={device} />
+        ))}
+      </div>
+    );
   };
 
   handleNotFound = () => {
