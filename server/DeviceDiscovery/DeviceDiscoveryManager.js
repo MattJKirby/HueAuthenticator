@@ -28,54 +28,64 @@ class DeviceDiscoveryManager {
     * Scan for local devices using SSDP protocol
     */
     networkScanForDevice = (deviceType) => {
-        const config = deviceType.config;
-        // On socket start, broadcast discovery request packet
-        this.socket.on('listening', () => {
-            this.broadcastSSDP(this.socket, config.defaultIp, config.defaultPort, config.target);
-        });
+        return new Promise((resolve,reject) => {
 
-        // Parse response message from discovery
-        this.socket.on('message', (chunk, info) => {
-            const result = { uuid: null, location: null, type: deviceType };
-            const buffer = Buffer.from(chunk);
-            const response = buffer.toString().trim().split('\r\n');
+            const config = deviceType.config;
+            // On socket start, broadcast discovery request packet
+            this.socket.on('listening', () => {
+                this.broadcastSSDP(this.socket, config.defaultIp, config.defaultPort, config.target);
+            });
 
-            const deviceChecked = this.deviceTypeChecker(response,deviceType);
-            if (deviceChecked){
-                response.forEach((item) =>{
-                    const hvSplit = item.indexOf(":");
-                    if (hvSplit > -1){
-                        const header = item.slice(0,hvSplit);
-                        const value = item.slice(hvSplit + 2, item.length);
+            // Parse response message from discovery
+            this.socket.on('message', (chunk, info) => {
+                const result = { uuid: null, location: null, type: deviceType };
+                const buffer = Buffer.from(chunk);
+                const response = buffer.toString().trim().split('\r\n');
 
-                        if(deviceType.dataKeys[header] !== undefined){
-                            const dataItem = deviceType.dataKeys[header]
-                            result[dataItem] = value 
+                const deviceChecked = this.deviceTypeChecker(response,deviceType);
+                if (deviceChecked){
+                    response.forEach((item) =>{
+                        const hvSplit = item.indexOf(":");
+                        if (hvSplit > -1){
+                            const header = item.slice(0,hvSplit);
+                            const value = item.slice(hvSplit + 2, item.length);
+
+                            if(deviceType.dataKeys[header] !== undefined){
+                                const dataItem = deviceType.dataKeys[header]
+                                result[dataItem] = value 
+                            }
+                        }
+                    })
+                    if (result.uuid.slice(0,4) === 'uuid' && result.location) {
+                        if(this.devices.filter(d => d.uuid === result.uuid).length === 0){
+                            this.devices.push(new Device(result.uuid, result.location, deviceType));
+                            this.socket.close();
                         }
                     }
-                })
-                if (result.uuid.slice(0,4) === 'uuid' && result.location) {
-                    if(this.devices.filter(d => d.uuid === result.uuid).length === 0){
-                        this.devices.push(new Device(result.uuid, result.location, deviceType));
-                    }
                 }
-            }   
-        })
+            })
 
-        this.socket.bind(this.config.sourcePort, this.config.sourceIp);
+            this.socket.on("close", () =>{
+                if(this.devices.length > 0){
+                    resolve(this.devices)
+                } else {
+                    reject("No devices found")
+                }
+            })
 
-        // Timeout after 3000ms
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                this.socket.close();
-                resolve(this.devices);
-            }, 3000);
-        })
+            this.socket.bind(this.config.sourcePort, this.config.sourceIp);
+        });
     }
 
-    
-
-    
+    /* 
+     * Async discover devices on network using SSDP protocol
+     */
+    asyncDeviceDiscover = async (deviceType) => {
+        return await this.networkScanForDevice(deviceType)
+            .catch(error => {
+                console.log(`Async request failed: ${error}`);
+            });
+    }
 
     /* 
      * Verifies that a packet has come from the correct source device

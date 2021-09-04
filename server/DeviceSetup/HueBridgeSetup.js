@@ -7,13 +7,15 @@ module.exports = function (app, asyncRequest) {
         let hue = new hueBridgeConfig();
         let discoveryManager = new DeviceDiscoveryManager();
 
-        discoveryManager.networkScanForDevice(hue).then((foundDevices) =>{
+        discoveryManager.asyncDeviceDiscover(hue).then((foundDevices) =>{
             console.log(foundDevices)
             console.log(foundDevices.length)
             
             if(foundDevices.length > 0){
                 res.send({devices: foundDevices})
             }
+        }).catch((err) =>{
+            console.log(err, "AAA")
         });
 
     })
