@@ -1,6 +1,6 @@
-const GenericDeviceType = require('../GenericDeviceType');
+const DeviceType = require('../DeviceType');
 
-class HueBridgeDeviceType extends GenericDeviceType {
+class HueBridgeDeviceType extends DeviceType {
     constructor() {
         super();
         this.name = "Phillips Hue Bridge";

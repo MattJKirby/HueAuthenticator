@@ -50,8 +50,8 @@ class DeviceDiscoveryManager {
                             const header = item.slice(0,hvSplit);
                             const value = item.slice(hvSplit + 2, item.length);
 
-                            if(deviceType.dataKeys[header] !== undefined){
-                                const dataItem = deviceType.dataKeys[header]
+                            const dataItem = Object.keys(deviceType.packetDataKeys).find(key => deviceType.packetDataKeys[key] === header);
+                            if(dataItem !== undefined){
                                 result[dataItem] = value 
                             }
                         }
