@@ -30,7 +30,7 @@ class DeviceDiscoveryManager {
     networkScanForDevice = (deviceType) => {
         return new Promise((resolve,reject) => {
 
-            const config = deviceType.config;
+            const config = deviceType.packetConfig;
             // On socket start, broadcast discovery request packet
             this.socket.on('listening', () => {
                 this.broadcastSSDP(this.socket, config.defaultIp, config.defaultPort, config.target);
