@@ -101,10 +101,7 @@ class DeviceDiscoveryManager {
             return false 
         });
         return response || false;
-    }
-
-    
-    
+    }  
 }
 
 module.exports = DeviceDiscoveryManager

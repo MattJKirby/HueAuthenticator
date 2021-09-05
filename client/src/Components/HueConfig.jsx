@@ -25,6 +25,7 @@ class HueConfig extends Component {
       })
       .catch((err) => console.log("Server Error: ", err))
       .finally(() => {
+        console.log(this.state.discoveredDevices.length);
         let status = this.state.discoveredDevices.length > 0 ? "found" : "not found";
         this.setState({ status: status }, () => {
           this.handleDiscoveredDevices();
