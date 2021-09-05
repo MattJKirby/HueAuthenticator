@@ -1,4 +1,7 @@
-let asyncRequest = require('../asyncRequest');
+const asyncRequest = require('../asyncRequest');
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+
 
 class Device {
     constructor(uuid, locationUrl, type){
@@ -17,10 +20,12 @@ class Device {
 
     requestLocationData = () =>{
         asyncRequest(this.location.hostname, this.location.path, 443, 'GET', 5000).then((req) => {
-            console.log(req.body)
+            const dom = new JSDOM(`<!DOCTYPE html><p>Hello world</p>`);
+            console.log(dom.window.document.querySelector("p").textContent); 
+            
         }).catch(() =>{
 
-        })
+        });
     }
 
 }
