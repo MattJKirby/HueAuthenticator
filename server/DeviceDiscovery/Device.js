@@ -9,7 +9,7 @@ class Device {
         this.uuid = uuid;
         this.type = type;
         this.location = this.initialiseLocationDataContainer(locationUrl, type);
-        console.log(this.type)
+     
  
     }
 
