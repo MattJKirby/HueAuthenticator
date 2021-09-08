@@ -8,9 +8,6 @@ module.exports = function (app, asyncRequest) {
         let discoveryManager = new DeviceDiscoveryManager();
 
         discoveryManager.asyncDeviceDiscover(hue).then((foundDevices) =>{
-            console.log(foundDevices)
-            console.log(foundDevices.length)
-            
             if(foundDevices.length > 0){
                 res.send({devices: foundDevices})
             }
