@@ -1,19 +1,34 @@
-const hueBridgeDeviceType = require('../DeviceDiscovery/DeviceTypes/HueBridgeDevice');
+const HueBridgeDeviceType = require('../DeviceDiscovery/DeviceTypes/HueBridgeDevice');
 const DeviceDiscoveryManager = require('../DeviceDiscovery/DeviceDiscoveryManager')
+const DeviceContainer = require("../DeviceDiscovery/DataContainers/DeviceContainer")
+
+let hue = new HueBridgeDeviceType();
+let discoveryManager = new DeviceDiscoveryManager();
+let deviceContainer = new DeviceContainer()
 
 module.exports = function (app, asyncRequest) {
     app.get('/hueConfig', (req, res) => {
         console.log("loaded")
-        let hue = new hueBridgeDeviceType();
-        let discoveryManager = new DeviceDiscoveryManager();
-
-        discoveryManager.asyncDeviceDiscover(hue).then((foundDevices) =>{
-            if(foundDevices.length > 0){
-                res.send({devices: foundDevices})
+        
+        
+        discoveryManager.asyncDeviceDiscover(hue).then((discoveredDevices) =>{
+            
+            if(discoveredDevices.length > 0){
+                discoveredDevices.forEach(device => {
+                    deviceContainer.storeDevice(device)
+                });
+                res.send({devices: discoveredDevices})
+            
             }
+
+            console.log(deviceContainer.devices.length)
+          
         }).catch((err) =>{
-            console.log(err, "AAA")
-        });
+            console.log(err)
+        })
+
+       
+
 
     })
 
