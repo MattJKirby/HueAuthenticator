@@ -1,18 +1,20 @@
 const LocationDataContainer = require('./DataContainers/LocationDataContainer');
-
+const asyncRequest = require('../asyncRequest');
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
 
 class Device {
     constructor(uuid, locationUrl, type){
         this.uuid = uuid;
         this.type = type;
-        this.location = this.initialiseLocationDataContainer(locationUrl, type);
-     
- 
+        this.location = this.initialiseLocationDataContainer(locationUrl);
+        
+        this.requestLocationData(this.location.hostname, this.location.path);
     }
 
-    initialiseLocationDataContainer(locationUrl, deviceType){
+    initialiseLocationDataContainer(locationUrl){
         let locationMap = this.parseLocationUrl(locationUrl)
-        return new LocationDataContainer(locationMap.hostname, locationMap.path, deviceType)
+        return new LocationDataContainer(locationMap.hostname, locationMap.path)
     }
 
     parseLocationUrl = (url) =>{
@@ -20,6 +22,16 @@ class Device {
         let path = url.slice(url.lastIndexOf("/", url.length));
         return { hostname: hostname, path: path }
     }
+
+    requestLocationData = (hostname, path) =>{
+        asyncRequest(hostname, path, 443, 'GET', 5000).then((req) => {
+            this.location.setData(new JSDOM(req.body),this.type.locationXmlTags);
+        }).catch((err) =>{
+            console.log(`Error requesting location data: ${err}`)
+        });
+    }
+
+    
 
     
 

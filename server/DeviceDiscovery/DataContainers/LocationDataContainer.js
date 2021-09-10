@@ -1,38 +1,21 @@
-const asyncRequest = require('../../asyncRequest');
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
-
-
 class LocationDataContainer {
-    constructor(hostname, path, deviceType){
+    constructor(hostname, path){
         this.hostname = hostname
         this.path = path
-        this.deviceType = deviceType
-        this.data = this.requestLocationData(this.hostname, this.path) 
+        this.data = {}
          
     }
 
-    requestLocationData = (hostname, path) =>{
-        asyncRequest(hostname, path, 443, 'GET', 5000).then((req) => {
-            return this.setLocationData(new JSDOM(req.body));
-            
-        }).catch(() =>{
-
-        });
-    }
-
-    setLocationData = (xmlDom) =>{
-        retreivedData = {}
-        for (const key in this.deviceType.locationXmlTags){
-            const value = this.deviceType.locationXmlTags[key];
-            console.log(xmlDom.window.document.querySelector(value).textContent);
-            retreivedData[key] = value
+    setData = (xmlDom,xmlTags) =>{
+        let retreivedData = {}
+       
+        for (const key in xmlTags){
+            const value = xmlTags[key];
+            retreivedData[key] = xmlDom.window.document.querySelector(value).textContent;
         }
-        return retreivedData
+        console.log(retreivedData)
+        this.data = retreivedData
     }
-
-   
-
 }
 
 module.exports = LocationDataContainer

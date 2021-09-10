@@ -68,7 +68,7 @@ class HueConfig extends Component {
     return (
       <React.Fragment>
         <Link to={`/settings`}>Back</Link>
-        <div>Philips Hue Bridge</div>
+        <div>Configure Philips Hue Bridge</div>
         {this.renderOnStatus()}
       </React.Fragment>
     );
