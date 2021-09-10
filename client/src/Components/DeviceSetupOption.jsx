@@ -7,8 +7,10 @@ class DeviceSetupOption extends Component {
   render() {
     return (
       <React.Fragment>
+        {console.log(this.props.device)}
         <ul>
           <li>{this.props.device.type.name}</li>
+          <li>{this.props.device.location.path}</li>
         </ul>
       </React.Fragment>
     );
