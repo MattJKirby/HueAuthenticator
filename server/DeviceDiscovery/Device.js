@@ -8,8 +8,6 @@ class Device {
         this.uuid = uuid;
         this.type = type;
         this.location = this.initialiseLocationDataContainer(locationUrl);
-        
-        this.requestLocationData(this.location.hostname, this.location.path);
     }
 
     initialiseLocationDataContainer(locationUrl){
@@ -23,17 +21,19 @@ class Device {
         return { hostname: hostname, path: path }
     }
 
-    requestLocationData = (hostname, path) =>{
-        asyncRequest(hostname, path, 443, 'GET', 5000).then((req) => {
+    requestLocationData = () =>{
+        asyncRequest(this.location.hostname, this.location.path, 443, 'GET', 5000).then((req) => {
             this.location.setData(new JSDOM(req.body),this.type.locationXmlTags);
         }).catch((err) =>{
             console.log(`Error requesting location data: ${err}`)
         });
     }
 
-    
-
-    
+    static async build () {
+        newDevice = new Device();
+        await newDevice.requestLocationData();
+        return newDevice;
+    }
 
 }
 module.exports = Device;
