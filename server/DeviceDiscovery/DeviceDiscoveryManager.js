@@ -1,9 +1,8 @@
 var dgram = require('dgram');
-const Device = require('./Device');
+const DeviceBuilder = require('../Builders/DeviceBuilder')
 
 class DeviceDiscoveryManager {
     constructor() {
-        this.socket = dgram.createSocket({type:'udp4', reuseAddr: true});
         this.devices = [];
         this.config = Object.freeze({
             sourceIp: "0.0.0.0",
@@ -29,15 +28,16 @@ class DeviceDiscoveryManager {
     */
     networkScanForDevice = (deviceType) => {
         return new Promise((resolve,reject) => {
-
+            const socket = dgram.createSocket({type:'udp4', reuseAddr: true});
             const config = deviceType.packetConfig;
+            
             // On socket start, broadcast discovery request packet
-            this.socket.on('listening', () => {
-                this.broadcastSSDP(this.socket, config.defaultIp, config.defaultPort, config.target);
+            socket.on('listening', () => {
+                this.broadcastSSDP(socket, config.defaultIp, config.defaultPort, config.target);
             });
 
             // Parse response message from discovery
-            this.socket.on('message', (chunk, info) => {
+            socket.on('message', (chunk, info) => {
                 const result = { uuid: null, location: null, type: deviceType };
                 const buffer = Buffer.from(chunk);
                 const response = buffer.toString().trim().split('\r\n');
@@ -58,14 +58,22 @@ class DeviceDiscoveryManager {
                     })
                     if (result.uuid.slice(0,4) === 'uuid' && result.location) {
                         if(this.devices.filter(d => d.uuid === result.uuid).length === 0){
-                            this.devices.push(new Device(result.uuid, result.location, deviceType));
-                            this.socket.close();
+                            const db = new DeviceBuilder();
+                           DeviceBuilder.build(result.uuid, result.location, deviceType).then((device) =>{
+                                console.log(device)
+                                this.devices.push(device)
+                            }).finally(() =>{
+                                socket.close();
+                            })
+                            
+                            //this.devices.push(new Device(result.uuid, result.location, deviceType));
+                            
                         }
                     }
                 }
             })
 
-            this.socket.on("close", () =>{
+            socket.on("close", () =>{
                 if(this.devices.length > 0){
                     resolve(this.devices)
                 } else {
@@ -73,7 +81,7 @@ class DeviceDiscoveryManager {
                 }
             })
 
-            this.socket.bind(this.config.sourcePort, this.config.sourceIp);
+            socket.bind(this.config.sourcePort, this.config.sourceIp);
         });
     }
 
