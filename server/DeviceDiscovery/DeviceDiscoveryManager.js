@@ -58,16 +58,13 @@ class DeviceDiscoveryManager {
                     })
                     if (result.uuid.slice(0,4) === 'uuid' && result.location) {
                         if(this.devices.filter(d => d.uuid === result.uuid).length === 0){
-                            const db = new DeviceBuilder();
                            DeviceBuilder.build(result.uuid, result.location, deviceType).then((device) =>{
                                 console.log(device)
                                 this.devices.push(device)
-                            }).finally(() =>{
                                 socket.close();
-                            })
-                            
-                            //this.devices.push(new Device(result.uuid, result.location, deviceType));
-                            
+                            }).catch(() =>{
+                                console.log("Error building device")
+                            })                            
                         }
                     }
                 }
@@ -102,10 +99,17 @@ class DeviceDiscoveryManager {
         const response = ssdpResponse.find((item) => {
             const kvSplit = item.indexOf(":");
             const key = item.slice(0,kvSplit);
+            const value = item.slice(kvSplit + 2);
+
+            //Doesnt work?
+            if(key === deviceType.packetDataKeys.uuid && value.slice(0,4) !== 'uuid'){
+                return false;
+            }
        
             if(deviceType.packetDescriptors[key] !== undefined){
                return true;
             }
+
             return false 
         });
         return response || false;
