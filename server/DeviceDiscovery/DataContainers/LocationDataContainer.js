@@ -13,7 +13,6 @@ class LocationDataContainer {
             const value = xmlTags[key];
             retreivedData[key] = xmlDom.window.document.querySelector(value).textContent;
         }
-        console.log(retreivedData)
         this.data = retreivedData
     }
 }

@@ -14,19 +14,15 @@ module.exports = function (app, asyncRequest) {
             
             if(discoveredDevices.length > 0){
                 discoveredDevices.forEach(device => {
-                    deviceContainer.storeDevice(device)
+                    deviceContainer.storeDevice(device)  
+                    
                 });
             }
-
             res.send({devices: deviceContainer.devices})
           
         }).catch((err) =>{
             console.log(err)
         })
-
-       
-
-
     })
 
     app.post('/hueConfigIP', (req, res) => {

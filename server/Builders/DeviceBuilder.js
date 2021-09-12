@@ -5,7 +5,12 @@ class DeviceBuilder{
 
     }
 
-    newDevice = async (uuid, locationUrl, type) =>{
-        return new Device(uuid, locationUrl, type).build();
+
+    static async build (uuid, locationUrl, type) {
+        const newDevice = new Device(uuid, locationUrl, type);
+        await newDevice.requestLocationData();
+        return newDevice;
     }
 }
+
+module.exports = DeviceBuilder
