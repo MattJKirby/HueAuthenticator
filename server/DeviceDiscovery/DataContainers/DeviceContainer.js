@@ -4,7 +4,7 @@ class DeviceContainer{
     }
 
     storeDevice(newDevice){
-        if(!this.checkForDuplicateDevice(newDevice.uuid)){
+        if(this.checkForDuplicateDevice(newDevice.uuid) === false){
             this.devices.push(newDevice)
         }   
     }
