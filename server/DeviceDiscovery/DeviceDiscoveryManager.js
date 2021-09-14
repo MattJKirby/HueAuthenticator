@@ -1,8 +1,6 @@
 var dgram = require('dgram');
 const DeviceBuilder = require('../Builders/DeviceBuilder');
 
-
-
 class DeviceDiscoveryManager {
     constructor() {
         this.devices = [];
@@ -30,45 +28,37 @@ class DeviceDiscoveryManager {
     */
     networkScanForDevice = (deviceType) => {
         return new Promise((resolve,reject) => {
+            this.devices = []
             const socket = dgram.createSocket({type:'udp4', reuseAddr: true});
             const config = deviceType.packetConfig;
+            
+            socket.bind(this.config.sourcePort, this.config.sourceIp);
 
             // On socket start, broadcast discovery request packet
             socket.on('listening', () => {
                 this.broadcastSSDP(socket, config.defaultIp, config.defaultPort, config.target);
             });
 
-            // Parse response message from discovery
+            // Parse response message from packet discovery
             socket.on('message', (chunk, info) => {
-                const result = { uuid: null, location: null, type: deviceType };
                 const buffer = Buffer.from(chunk);
                 const response = buffer.toString().trim().split('\r\n');
-
                 const deviceChecked = this.deviceTypeChecker(response,deviceType);
+                
                 if (deviceChecked){
-                    response.forEach((item) =>{
-                        const hvSplit = item.indexOf(":");
-                        if (hvSplit > -1){
-                            const header = item.slice(0,hvSplit);
-                            const value = item.slice(hvSplit + 2, item.length);
+                    const result = this.retrievePacketData(response,deviceType);
 
-                            const dataItem = Object.keys(deviceType.packetDataKeys).find(key => deviceType.packetDataKeys[key] === header);
-                            if(dataItem !== undefined){
-                                result[dataItem] = value
-                            }
-                        }
-                    })
-
-                        if(this.devices.filter(d => d.uuid === result.uuid).length === 0){ 
-                            DeviceBuilder.build(result.uuid, result.location, deviceType).then((device) =>{
-                                this.devices.push(device)
-                                socket.close();
-                            }).catch(() =>{
-                                console.log("Error building device")
-                            })
-                        }
-                   
-                }
+                    if(this.devices.filter(d => d.uuid === result.uuid).length === 0){ 
+                        DeviceBuilder.build(result.uuid, result.location, deviceType).then((device) =>{
+                            this.devices.push(device)
+                        }).catch(() =>{
+                            console.log("Error building device")
+                        }).finally(() =>{
+                            socket.close();
+                        })
+                    }
+                     
+                } 
             })
 
             socket.on("close", () =>{
@@ -78,8 +68,6 @@ class DeviceDiscoveryManager {
                     reject("No devices found")
                 }
             })
-
-            socket.bind(this.config.sourcePort, this.config.sourceIp);
         });
     }
 
@@ -114,13 +102,32 @@ class DeviceDiscoveryManager {
             if(typeMatch && validUid){
                 return true
             }
-
             return false
         });
 
         return response || false;
     }
 
+    /*
+     * Obtains the required data from the correct response packet
+     */
+    retrievePacketData = (response, deviceType) =>{
+        const result = { uuid: null, location: null, type: deviceType };
+
+        response.forEach((item) =>{
+            const hvSplit = item.indexOf(":");
+            if (hvSplit > -1){
+                const header = item.slice(0,hvSplit);
+                const value = item.slice(hvSplit + 2, item.length);
+
+                const dataItem = Object.keys(deviceType.packetDataKeys).find(key => deviceType.packetDataKeys[key] === header);
+                if(dataItem !== undefined){
+                    result[dataItem] = value
+                }
+            }
+        })
+        return result;
+    }
     
 }
 

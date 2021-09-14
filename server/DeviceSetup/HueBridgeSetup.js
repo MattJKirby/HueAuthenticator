@@ -3,12 +3,12 @@ const DeviceDiscoveryManager = require('../DeviceDiscovery/DeviceDiscoveryManage
 const DeviceContainer = require("../DeviceDiscovery/DataContainers/DeviceContainer")
 
 let hue = new HueBridgeDeviceType();
-let discoveryManager = new DeviceDiscoveryManager();
 let deviceContainer = new DeviceContainer()
+let discoveryManager = new DeviceDiscoveryManager();
 
 module.exports = function (app, asyncRequest) {
     app.get('/hueConfig', (req, res) => {
-        console.log("loaded")
+        
             
         discoveryManager.asyncDeviceDiscover(hue).then((discoveredDevices) =>{
             

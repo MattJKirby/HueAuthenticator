@@ -4,7 +4,19 @@ class DeviceContainer{
     }
 
     storeDevice(newDevice){
-        this.devices.push(newDevice)
+        if(!this.checkForDuplicateDevice(newDevice.uuid)){
+            this.devices.push(newDevice)
+        }   
+    }
+
+    checkForDuplicateDevice(uuid){
+        const exisingDevices = this.devices.find((device) =>{
+            if(device.uuid === uuid){
+                return true
+            }
+            return false
+        })
+        return exisingDevices || false
     }
 }
 
