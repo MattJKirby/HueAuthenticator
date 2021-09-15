@@ -10,14 +10,10 @@ module.exports = function (app, asyncRequest) {
     app.get('/hueConfig', (req, res) => {
             
         discoveryManager.asyncDeviceDiscover(hue).then((discoveredDevices) =>{
-            
-            if(discoveredDevices.length > 0){
-                discoveredDevices.forEach(device => {
-                    deviceContainer.storeDevice(device)  
-                });
-            }
+            discoveredDevices.forEach(device => {
+                deviceContainer.storeDevice(device)  
+            });
             res.send({devices: deviceContainer.devices})
-          
         }).catch((err) =>{
             console.log(err)
         })
