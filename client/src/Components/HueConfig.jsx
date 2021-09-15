@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { asyncRequest, restRequest } from "../Helpers/AsyncRequest";
-import DeviceSetupOption from "./DeviceSetupOption";
+import DeviceSetupOption from "./DiscoveredDevice";
 
 class HueConfig extends Component {
   constructor(props) {
