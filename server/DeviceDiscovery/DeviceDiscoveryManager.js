@@ -29,6 +29,7 @@ class DeviceDiscoveryManager {
     networkScanForDevice = (deviceType) => {
         return new Promise((resolve,reject) => {
             this.devices = []
+            const deviceBuilder = new DeviceBuilder();
             const socket = dgram.createSocket({type:'udp4', reuseAddr: true});
             const config = deviceType.packetConfig;
             
@@ -49,7 +50,7 @@ class DeviceDiscoveryManager {
                     const result = this.retrievePacketData(response,deviceType);
 
                     if(this.devices.filter(d => d.uuid === result.uuid).length === 0){ 
-                        DeviceBuilder.build(result.uuid, result.location, deviceType).then((device) =>{
+                        deviceBuilder.build(result.uuid, result.location, deviceType).then((device) =>{
                             this.devices.push(device)
                         }).catch(() =>{
                             console.log("Error building device")
