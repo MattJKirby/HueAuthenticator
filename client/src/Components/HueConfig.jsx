@@ -20,12 +20,10 @@ class HueConfig extends Component {
     this.setState({ status: "waiting" });
     asyncRequest("/hueConfig")
       .then((res) => {
-        console.log(res.devices);
         this.setState({ discoveredDevices: res.devices });
       })
       .catch((err) => console.log("Server Error: ", err))
       .finally(() => {
-        console.log(this.state.discoveredDevices.length);
         let status = this.state.discoveredDevices.length > 0 ? "found" : "not found";
         this.setState({ status: status }, () => {
           this.handleDiscoveredDevices();

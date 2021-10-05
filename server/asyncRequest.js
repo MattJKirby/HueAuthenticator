@@ -1,6 +1,6 @@
 const https = require('https');
 
-const requestPromise = (options) => {
+const requestPromise = (options,body) => {
     return new Promise((resolve, reject) => {
         https.request(options, (res) => {
             res.setEncoding('utf8');
@@ -21,8 +21,8 @@ const requestPromise = (options) => {
     });
 }
 
-module.exports = async function asyncRequest(hostname, path, port, method, timeout) {
-    return await requestPromise({ hostname, path, port, method, timeout })
+module.exports = async function asyncRequest(hostname, path, port, method, timeout,body) {
+    return await requestPromise({ hostname, path, port, method, timeout}, body)
         .catch(error => {
             console.log(`Async request failed: ${error}`);
         });

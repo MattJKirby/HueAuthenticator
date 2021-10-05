@@ -12,6 +12,7 @@ app.use(express.json());
 
 // modules
 let asyncRequest = require('./asyncRequest');
+
 require('./DeviceSetup/HueBridgeSetup')(app, asyncRequest);
 
 

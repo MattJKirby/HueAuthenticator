@@ -9,7 +9,7 @@ class DeviceType {
         return {name: name, manufacturer: manufacturer, description: description, url: url, model: model, serial: serial} 
     }
 
-    
+
 }
 
 module.exports = DeviceType;
