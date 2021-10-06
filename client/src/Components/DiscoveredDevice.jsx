@@ -1,27 +1,28 @@
 import React, { Component } from "react";
+import HueAuthInstructionPanel from "./HueAuthInstructonPanel";
 import { asyncRequest } from "../Helpers/AsyncRequest";
 
 class DiscoveredDevice extends Component {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = {
+      authInstructions: false,
+    };
+  }
 
-  makeConnectionRequest = () => {
-    console.log(this.props.device);
-    fetch("/hueConfig/connect", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        uuid: this.props.device.uuid,
-      }),
-    });
+  renderInstructionPanel = () => {
+    if (this.state.authInstructions) {
+      return <HueAuthInstructionPanel device={this.props.device} panelVisibility={this.toggleInstructionPanel}/>;
+    }
+  };
+
+  toggleInstructionPanel = (state) => {
+    this.setState({ authInstructions: state });
   };
 
   render() {
     return (
       <React.Fragment>
-        {console.log(this.props.device)}
         <ul>
           <li>{this.props.device.type.name}</li>
           <li>{this.props.device.location.hostname}</li>
@@ -29,9 +30,10 @@ class DiscoveredDevice extends Component {
             <button>Info</button>
           </li>
           <li>
-            <button onClick={this.makeConnectionRequest}>Connect</button>
+            <button onClick={() => this.toggleInstructionPanel(true)}>Connect</button>
           </li>
         </ul>
+        {this.renderInstructionPanel()}
       </React.Fragment>
     );
   }
