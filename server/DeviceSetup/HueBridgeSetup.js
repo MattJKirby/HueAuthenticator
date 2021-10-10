@@ -21,19 +21,22 @@ module.exports = function (app, asyncRequest) {
         })
     })
 
-    app.post('/hueConfig/connect', (req) =>{
+    app.post('/hueConfig/connect', (req,res) =>{
         const device = deviceContainer.checkForDevice(req.body.uuid)
-        
-      authenticateNewUser(device)
-        .then(res =>{
-            
-            if (Object.keys(res.data[0])[0] === 'success'){
-                
-            } else {
-
+        const authResult = {uuid: device.uuid, result: false, message: null}
+      
+        authenticateNewUser(device)
+        .then(authRes =>{
+            const result = Object.keys(authRes.data[0])[0];
+            if (result === 'success'){
+                authResult.result = true
             }
-            
-        })      
+            authResult.message = authRes.data[0][result].description
+        }).finally(() => {
+            res.send({result: authResult})
+        });
+        
+        
     })
 
     authenticateNewUser = async (device) =>{
@@ -47,11 +50,6 @@ module.exports = function (app, asyncRequest) {
         }
     }
 
-    registerBridge = () =>{
-        console.log("true")
-    }
-
-    
 
     app.post('/hueConfigIP', (req, res) => {
         hueBridgeIP = req.body.bridgeIP
