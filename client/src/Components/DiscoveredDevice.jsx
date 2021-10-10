@@ -12,7 +12,7 @@ class DiscoveredDevice extends Component {
 
   renderInstructionPanel = () => {
     if (this.state.authInstructions) {
-      return <HueAuthInstructionPanel device={this.props.device} panelVisibility={this.toggleInstructionPanel}/>;
+      return <HueAuthInstructionPanel key={this.props.device.uuid} device={this.props.device} panelVisibility={this.toggleInstructionPanel} />;
     }
   };
 

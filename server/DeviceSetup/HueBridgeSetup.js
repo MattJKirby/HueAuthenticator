@@ -26,25 +26,32 @@ module.exports = function (app, asyncRequest) {
         
       authenticateNewUser(device)
         .then(res =>{
+            
             if (Object.keys(res.data[0])[0] === 'success'){
-
-            } else {
                 
+            } else {
+
             }
             
-           
         })      
     })
 
     authenticateNewUser = async (device) =>{
-        console.log("yes")
         const connectData = {devicetype: `user`}
-        try{
-            return await axios.post(`https://${device.location.hostname}/api`,connectData)
-        } catch (err){
-            console.log(err)
+        if(device != null){
+            try{
+                return await axios.post(`https://${device.location.hostname}/api`,connectData)
+            } catch (err){
+                console.log(err)
+            }
         }
     }
+
+    registerBridge = () =>{
+        console.log("true")
+    }
+
+    
 
     app.post('/hueConfigIP', (req, res) => {
         hueBridgeIP = req.body.bridgeIP
