@@ -1,24 +1,35 @@
 import React, { Component } from "react";
-import HueAuthInstructionPanel from "./HueAuthInstructonPanel";
+import HueAuthPanel from "./HueAuthPanel";
 import { asyncRequest } from "../Helpers/AsyncRequest";
 
 class DiscoveredDevice extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      authInstructions: false,
+      authPanel: false,
+      authenticated: false,
     };
   }
 
-  renderInstructionPanel = () => {
-    if (this.state.authInstructions) {
-      return <HueAuthInstructionPanel key={this.props.device.uuid} device={this.props.device} panelVisibility={this.toggleInstructionPanel} />;
+  renderAuthPanel = () => {
+    if (this.state.authPanel) {
+      return (
+      <HueAuthPanel 
+        key={this.props.device.uuid} 
+        device={this.props.device} 
+        panelVisibility={this.toggleAuthPanel} 
+        handleAuth = {this.handleAuthentication} />
+        );
     }
   };
 
-  toggleInstructionPanel = (state) => {
-    this.setState({ authInstructions: state });
+  toggleAuthPanel = (state) => {
+    this.setState({ authPanel: state });
   };
+
+  handleAuthentication =()=>{
+    this.setState({authenticated: true})
+  }
 
   render() {
     return (
@@ -30,10 +41,11 @@ class DiscoveredDevice extends Component {
             <button>Info</button>
           </li>
           <li>
-            <button onClick={() => this.toggleInstructionPanel(true)}>Connect</button>
+            <button onClick={() => this.toggleAuthPanel(true)}>Connect</button>
           </li>
         </ul>
-        {this.renderInstructionPanel()}
+        {this.state.authenticated ? "Connected" : "Not Connected"}
+        {this.renderAuthPanel()}
       </React.Fragment>
     );
   }

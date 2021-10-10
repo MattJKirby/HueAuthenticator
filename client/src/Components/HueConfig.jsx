@@ -35,10 +35,8 @@ class HueConfig extends Component {
     switch (this.state.status) {
       case "waiting":
         return this.renderLoader();
-        break;
       case "found":
         return this.handleDiscoveredDevices();
-        break;
       default:
         return this.handleNotFound();
     }
