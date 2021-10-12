@@ -14,12 +14,8 @@ class DiscoveredDevice extends Component {
   renderAuthPanel = () => {
     if (this.state.authPanel) {
       return (
-      <HueAuthPanel 
-        key={this.props.device.uuid} 
-        device={this.props.device} 
-        panelVisibility={this.toggleAuthPanel} 
-        handleAuth = {this.handleAuthentication} />
-        );
+        <HueAuthPanel key={this.props.device.uuid} device={this.props.device} panelVisibility={this.toggleAuthPanel} handleAuth={this.handleAuthentication} />
+      );
     }
   };
 
@@ -27,9 +23,9 @@ class DiscoveredDevice extends Component {
     this.setState({ authPanel: state });
   };
 
-  handleAuthentication =()=>{
-    this.setState({authenticated: true})
-  }
+  handleAuthentication = () => {
+    this.setState({ authenticated: true });
+  };
 
   render() {
     return (
@@ -43,8 +39,9 @@ class DiscoveredDevice extends Component {
           <li>
             <button onClick={() => this.toggleAuthPanel(true)}>Connect</button>
           </li>
+          <li>{this.state.authenticated ? "Connected" : "Not Connected"}</li>
         </ul>
-        {this.state.authenticated ? "Connected" : "Not Connected"}
+
         {this.renderAuthPanel()}
       </React.Fragment>
     );

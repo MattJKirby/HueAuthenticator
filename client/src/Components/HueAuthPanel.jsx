@@ -20,16 +20,20 @@ class HueAuthPanel extends React.Component {
       }),
     }).then((res) => {
       res.json().then((res) => {
-        this.setState({ authResponse: res.result });
+        this.setState({ authResponse: res.result }, () =>{
+          if(this.state.authResponse.result){
+            this.props.handleAuth()
+            this.props.panelVisibility(false)
+         
+          }
+        });
+        
       });
     });
   };
 
   handleAuthenticationResult = () => {
-    if(this.state.authResponse && this.state.authResponse.result){
-      this.props.handleAuth()
-      this.props.panelVisibility()
-    } else if (this.state.authResponse && this.state.authResponse.message) {
+    if (this.state.authResponse && this.state.authResponse.message) {
       return `Could not connect: ${this.state.authResponse.message}`
     }
   };
@@ -44,7 +48,9 @@ class HueAuthPanel extends React.Component {
           </li>
           <p>{this.handleAuthenticationResult()}</p>
           <li>
-            <button onClick={this.makeConnectionRequest}>Next</button>
+            <button onClick={this.makeConnectionRequest}>
+            {this.state.authResponse && this.state.authResponse.message? "Try again" : "Next"}
+            </button>
           </li>
         </ol>
       </div>
