@@ -46,7 +46,8 @@ class HueConfig extends Component {
     return (
       <div>
         {this.state.discoveredDevices.map((device) => (
-          <DeviceSetupOption key={device.uuid} device={device} />
+          <DeviceSetupOption key={device.uuid} device={device}/>
+          
         ))}
       </div>
     );
