@@ -29,7 +29,9 @@ module.exports = function (app, asyncRequest) {
         .then(authRes =>{
             const result = Object.keys(authRes.data[0])[0];
             if (result === 'success'){
-                authResult.result = true
+                authResult.result = true;
+                device.authenticated = true;
+                console.log(device)
             }
             authResult.message = authRes.data[0][result].description
         }).finally(() => {

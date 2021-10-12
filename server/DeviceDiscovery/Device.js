@@ -5,6 +5,7 @@ class Device {
         this.uuid = uuid;
         this.type = type;
         this.location = locationDataContainer
+        this.authenticated = false
     }
 
 }
