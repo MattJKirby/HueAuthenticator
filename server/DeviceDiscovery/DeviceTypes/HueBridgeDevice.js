@@ -1,4 +1,7 @@
+
+
 const DeviceType = require('./DeviceType');
+
 
 class HueBridgeDeviceType extends DeviceType {
     constructor() {

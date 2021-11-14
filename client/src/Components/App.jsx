@@ -2,8 +2,11 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { asyncRequest } from "../Helpers/AsyncRequest";
 import Settings from "./Settings";
+import DeviceSettings from "./DeviceSettings";
+import NewDevice from "./NewDevice";
 import HueConfig from "./HueConfig";
 import Dashboard from "./Dashboard";
+import test from "./test";
 
 class App extends Component {
   state = {
@@ -37,7 +40,9 @@ class App extends Component {
         <Switch>
           <Route exact path="/" component={Dashboard} />
           <Route exact path="/settings" component={Settings} />
-          <Route path="/settings/hueConfig" component={HueConfig} />
+          <Route path="/devices/hueConfig" component={HueConfig} />
+          <Route path="/devices/new" component={NewDevice} />
+          <Route path="/devices" component={DeviceSettings} />
         </Switch>
       </React.Fragment>
     );

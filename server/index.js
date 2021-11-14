@@ -14,6 +14,7 @@ app.use(express.json());
 let asyncRequest = require('./asyncRequest');
 
 require('./DeviceSetup/HueBridgeSetup')(app, asyncRequest);
+require('./DeviceSetup/DeviceRegister')(app)
 
 
 app.listen(PORT, () => {
