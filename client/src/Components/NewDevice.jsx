@@ -5,7 +5,7 @@ class NewDevice extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      status: "waiting",
+      status: "loadingDeviceRegister",
       deviceRegister: [],
     };
   }
@@ -17,14 +17,36 @@ class NewDevice extends React.Component {
   requestDeviceList = () => {
     asyncRequest("/getDeviceTypeRegister")
       .then((res) => {
-        console.log(res.register);
-        this.setState({ deviceRgister: res.register });
+        this.setState({ deviceRegister: res.register });
       })
-      .catch((err) => console.log("Server Error: ", err));
+      .catch((err) => console.log("Server Error: ", err))
+      .finally(() => {
+        this.setState({ status: this.state.deviceRegister.length > 0 ? "waitingTypeSelection" : "notFound" });
+      });
+  };
+
+  renderDeviceList = () => {
+    return (
+      <div>
+        Select device type:
+        {this.state.deviceRegister.map((item, i) => (
+          <li key={i}>{item.name}</li>
+        ))}
+      </div>
+    );
+  };
+
+  renderOnStatus = () => {
+    switch (this.state.status) {
+      case "waitingTypeSelection":
+        return this.renderDeviceList();
+      default:
+        return <div>LOADING</div>;
+    }
   };
 
   render() {
-    return <React.Fragment>TEST{this.state.deviceRegister}</React.Fragment>;
+    return <React.Fragment>{this.renderOnStatus()}</React.Fragment>;
   }
 }
 
